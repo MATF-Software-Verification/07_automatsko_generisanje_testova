@@ -19,6 +19,7 @@ class TestSaver:
 
     def export_to_file(self):
         for test in self.saved_tests:
-            self.__write_to_file(test);
+             self.__write_to_file(test);
+
 
         self.file.close();

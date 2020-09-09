@@ -33,29 +33,13 @@ class Genetic:
 			random.shuffle(genesList);
 			self.GENES = ''.join(genesList);
 
-		#print(self.GENES)
-
 
 
 	def initilization_of_population(self, pop_size, c_size):
-		#population = []
 
-		populationTmp = random.sample(range(0,pop_size), pop_size);
-		print(populationTmp);
-		populationList = list(map(lambda _: ''.join(random.choices(self.GENES, k=c_size)), populationTmp));
-
-
-		# for i in range(pop_size):
-		# 	# ----------------- With bytes -----------------
-		# 	# chromosome = bytearray('\x00' + ''.join(chr(random.randint(0,255)) for _ in range(c_size)) + '\x00', 'utf-8').decode('utf8')
-		# 	# chromosome = np.random.bytes(c_size)
-		#
-		# 	chromosome = ''.join(random.choices(self.GENES, k = c_size))
-		#
-		# 	print('[' + chromosome + ']')
-		#
-		# 	population.append(chromosome)
-
+		popilation = random.sample(range(0,pop_size), pop_size);
+		print(popilation);
+		populationList = list(map(lambda _: ''.join(random.choices(self.GENES, k=c_size)), popilation));
 
 		return populationList;
 
@@ -64,16 +48,10 @@ class Genetic:
 		scores = []
 
 		scores = list(map(self.executor.get_score, population))
-		# for chromosome in population:
-		# 	score = self.executor.get_score(chromosome);
-		# 	print('Score for input', chromosome, score)
-		# 	scores.append(score)
 
-		#population = [x for _,x in sorted(zip(scores,population))]
-		#scores.sort()
 		result = list(zip (population,scores));
 		result = sorted(result, key= lambda x: x[1]);
-		#print(result)
+		print(result)
 		return scores, population
 
 	def selection(self, pop_after_fit, n_parents):
@@ -81,7 +59,6 @@ class Genetic:
 
 	def crossover(self, pop_after_sel,mutation_rate):
 		population_nextgen=[]
-		#print('population before xover', pop_after_sel)
 
 		for i in range(self.pop_size):
 			xPosition = random.randint(0, self.c_size-1);
@@ -90,64 +67,28 @@ class Genetic:
 			child = pop_after_sel[first][:xPosition]
 
 			child += pop_after_sel[second][xPosition:]
-			# child.append(pop_after_sel[(i+1)%len(pop_after_sel)])
 
-
-			# child[3:5] = pop_after_sel[(i+1)%len(pop_after_sel)][3:7]
 			population_nextgen.append(self.mutation2(child, mutation_rate=mutation_rate))
+
 		print('population after xover', population_nextgen)
 		return population_nextgen
 
 	def mutation2(self, chromosome, mutation_rate):
 		if random.random() < mutation_rate:
-			newGene = random.choice(self.GENES);
 			randPosition = random.randint(0, len(chromosome)-1);
 			listTmp = list(chromosome)
-			listTmp[randPosition] = newGene
+			listTmp[randPosition] = random.choice(self.GENES)
 			return ''.join(listTmp)
 		else:
 			return chromosome
 
-
-
-	# def mutation(self, pop_after_cross, mutation_rate):
-	# 	population_nextgen = []
-	# 	#print('mutation():', pop_after_cross);
-	# 	for i in range(0,len(pop_after_cross)):
-	# 		chromosome = pop_after_cross[i]
-	# 		chromosome = self.mutation2(chromosome, mutation_rate);
-	# 		# for j in range(len(chromosome)):
-	# 				# if random.random() < mutation_rate:
-	# 				# 	global GENES
-	#
-	# 				# 	# --- With bytes ---
-	# 				# 	# chromosome[j] =  random.randint(0,255)
-	# 				# 	# ------------------
-	#
-	# 				# 	chromosome += random.choice(GENES)
-	# 				# 	# chromosome.replace(chromosome[j],random.choice(GENES))
-	#
-	# 				# 	# print(chromosome)
-	# 		#if random.random() < mutation_rate:
-	# 			# Had trouble to escape local min
-	# 				# clist = list(chromosome)
-	# 				# clist[random.randrange(len(clist))] = random.choice(self.GENES)
-	# 				# chromosome = "".join(clist)
-	# 			# print('before mutation:', chromosome)
-	# 			# chromosome = ''.join(random.choices(self.GENES, k = len(chromosome)))
-	# 			# print('after mutation:', chromosome)
-	#
-	#
-	# 		population_nextgen.append(chromosome)
-	# 	#print(population_nextgen)
-	# 	return population_nextgen
 
 	def start_evolution(self):
 		best_chromo = []
 		best_score = []
 		population_nextgen = self.initilization_of_population(self.pop_size, self.c_size)
 		for i in range(self.n_gen):
-			print('Generation no. :',i)
+			print('Iteration :',i+1)
 			scores, pop_after_fit = self.fitness_score(population_nextgen)
 
 			pop_after_sel = self.selection(pop_after_fit,self.n_parents)
