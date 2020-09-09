@@ -30,3 +30,4 @@ run:
 
 clean:
 	rm -rf *-temp-dir *.gcda *.gcno out.txt
+

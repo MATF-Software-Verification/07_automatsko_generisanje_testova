@@ -38,85 +38,109 @@ class Genetic:
 
 
 	def initilization_of_population(self, pop_size, c_size):
-		population = []
-		for i in range(pop_size):
-			# ----------------- With bytes -----------------
-			# chromosome = bytearray('\x00' + ''.join(chr(random.randint(0,255)) for _ in range(c_size)) + '\x00', 'utf-8').decode('utf8')
-			# chromosome = np.random.bytes(c_size)
+		#population = []
+
+		populationTmp = random.sample(range(0,pop_size), pop_size);
+		print(populationTmp);
+		populationList = list(map(lambda _: ''.join(random.choices(self.GENES, k=c_size)), populationTmp));
 
 
+		# for i in range(pop_size):
+		# 	# ----------------- With bytes -----------------
+		# 	# chromosome = bytearray('\x00' + ''.join(chr(random.randint(0,255)) for _ in range(c_size)) + '\x00', 'utf-8').decode('utf8')
+		# 	# chromosome = np.random.bytes(c_size)
+		#
+		# 	chromosome = ''.join(random.choices(self.GENES, k = c_size))
+		#
+		# 	print('[' + chromosome + ']')
+		#
+		# 	population.append(chromosome)
 
-			chromosome = ''.join(random.choices(self.GENES, k = c_size))
 
-			print('[' + chromosome + ']')
+		return populationList;
 
-			population.append(chromosome)
-
-
-		return population
-
+	#return value: list of tuples
 	def fitness_score(self, population):
 		scores = []
-		for chromosome in population:
-			# Here we get accuracy score, tricky messy part
 
-			score = self.executor.get_score(chromosome);
+		scores = list(map(self.executor.get_score, population))
+		# for chromosome in population:
+		# 	score = self.executor.get_score(chromosome);
+		# 	print('Score for input', chromosome, score)
+		# 	scores.append(score)
 
-			print('Score for input', chromosome, score)
-
-			scores.append(score)
-		population = [x for _,x in sorted(zip(scores,population))]
-		scores.sort()
-		#print(population, scores)
-		return scores, population  #reverse list
+		#population = [x for _,x in sorted(zip(scores,population))]
+		#scores.sort()
+		result = list(zip (population,scores));
+		result = sorted(result, key= lambda x: x[1]);
+		#print(result)
+		return scores, population
 
 	def selection(self, pop_after_fit, n_parents):
-		population_nextgen = []
-		for i in range(n_parents):
-			population_nextgen.append(pop_after_fit[i])
-		return population_nextgen
+		return pop_after_fit[:n_parents]
 
-	def crossover(self, pop_after_sel):
-		population_nextgen=pop_after_sel
-		for i in range(len(pop_after_sel)):
-			child = pop_after_sel[i][:len(pop_after_sel[i])//2]
+	def crossover(self, pop_after_sel,mutation_rate):
+		population_nextgen=[]
+		#print('population before xover', pop_after_sel)
 
-			child += pop_after_sel[(i+1)%len(pop_after_sel)][len(pop_after_sel[i])//2:]
+		for i in range(self.pop_size):
+			xPosition = random.randint(0, self.c_size-1);
+
+			[first,second] = random.sample(range(0,self.n_parents),2);
+			child = pop_after_sel[first][:xPosition]
+
+			child += pop_after_sel[second][xPosition:]
 			# child.append(pop_after_sel[(i+1)%len(pop_after_sel)])
 
 
 			# child[3:5] = pop_after_sel[(i+1)%len(pop_after_sel)][3:7]
-			population_nextgen.append(child)
+			population_nextgen.append(self.mutation2(child, mutation_rate=mutation_rate))
+		print('population after xover', population_nextgen)
 		return population_nextgen
 
+	def mutation2(self, chromosome, mutation_rate):
+		if random.random() < mutation_rate:
+			newGene = random.choice(self.GENES);
+			randPosition = random.randint(0, len(chromosome)-1);
+			listTmp = list(chromosome)
+			listTmp[randPosition] = newGene
+			return ''.join(listTmp)
+		else:
+			return chromosome
 
 
-	def mutation(self, pop_after_cross, mutation_rate):
-		population_nextgen = []
-		for i in range(0,len(pop_after_cross)):
-			chromosome = pop_after_cross[i]
-			# for j in range(len(chromosome)):
-					# if random.random() < mutation_rate:
-					# 	global GENES
 
-					# 	# --- With bytes ---
-					# 	# chromosome[j] =  random.randint(0,255)
-					# 	# ------------------
-
-					# 	chromosome += random.choice(GENES)
-					# 	# chromosome.replace(chromosome[j],random.choice(GENES))
-
-					# 	# print(chromosome)
-			if random.random() < mutation_rate:
-				# Had trouble to escape local min
-					# clist = list(chromosome)
-					# clist[random.randrange(len(clist))] = random.choice(self.GENES)
-					# chromosome = "".join(clist)
-				chromosome = ''.join(random.choices(self.GENES, k = len(chromosome)))
-
-			population_nextgen.append(chromosome)
-		#print(population_nextgen)
-		return population_nextgen
+	# def mutation(self, pop_after_cross, mutation_rate):
+	# 	population_nextgen = []
+	# 	#print('mutation():', pop_after_cross);
+	# 	for i in range(0,len(pop_after_cross)):
+	# 		chromosome = pop_after_cross[i]
+	# 		chromosome = self.mutation2(chromosome, mutation_rate);
+	# 		# for j in range(len(chromosome)):
+	# 				# if random.random() < mutation_rate:
+	# 				# 	global GENES
+	#
+	# 				# 	# --- With bytes ---
+	# 				# 	# chromosome[j] =  random.randint(0,255)
+	# 				# 	# ------------------
+	#
+	# 				# 	chromosome += random.choice(GENES)
+	# 				# 	# chromosome.replace(chromosome[j],random.choice(GENES))
+	#
+	# 				# 	# print(chromosome)
+	# 		#if random.random() < mutation_rate:
+	# 			# Had trouble to escape local min
+	# 				# clist = list(chromosome)
+	# 				# clist[random.randrange(len(clist))] = random.choice(self.GENES)
+	# 				# chromosome = "".join(clist)
+	# 			# print('before mutation:', chromosome)
+	# 			# chromosome = ''.join(random.choices(self.GENES, k = len(chromosome)))
+	# 			# print('after mutation:', chromosome)
+	#
+	#
+	# 		population_nextgen.append(chromosome)
+	# 	#print(population_nextgen)
+	# 	return population_nextgen
 
 	def start_evolution(self):
 		best_chromo = []
@@ -125,16 +149,10 @@ class Genetic:
 		for i in range(self.n_gen):
 			print('Generation no. :',i)
 			scores, pop_after_fit = self.fitness_score(population_nextgen)
+
 			pop_after_sel = self.selection(pop_after_fit,self.n_parents)
-			pop_after_cross = self.crossover(pop_after_sel)
-			population_nextgen = self.mutation(pop_after_cross,self.mutation_rate)
-			best_chromo.append(str(pop_after_fit[-1]))
-			best_score.append(scores[-1])
 
-			#print(best_score)
-			print("best chromosome so far:", str(best_chromo[-1]), best_score[-1])
+			population_nextgen = self.crossover(pop_after_sel, self.mutation_rate)
 
-
-			#print('Total coverage: ', len(E.executed_lines)/E.total_number_of_lines);
 			self.executor.pretty_progress(len(self.executor.executed_lines), self.executor.total_number_of_lines)
 		return best_chromo, best_score

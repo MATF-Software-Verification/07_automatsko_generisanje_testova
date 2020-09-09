@@ -100,7 +100,7 @@ class Executor:
 
 		if whatToConsider == 'lines':
 			for file in jsonStruct['files']:
-				lines_count += len(file['lines']); #mozda ovde neka provera da li postoji lines i sl.
+				lines_count += len(file['lines']);
 
 				if self.total_number_of_lines <= 0:
 					self.total_number_of_lines = len(file['lines']);
@@ -130,7 +130,6 @@ class Executor:
 						score += 1
 						self.executed_functions.add(i)
 			return score / functions_count
-
 
 
 		return 0;
