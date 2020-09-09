@@ -2,11 +2,15 @@ from genetic import Genetic
 from configuration import Configuration
 from executor import Executor
 from testsaver import TestSaver
+from debugger import Debug
 
 def main():
+    D = Debug(debug = True)
+    D.write('{:^42s}'.format("Debuging initialized"), color = 'red', end = '\n')#, file = sys.stdout)
+
+
 
     C = Configuration('conf.json')
-
     ts = TestSaver('out.txt')
     E = Executor(srcPath=C.srcPath, testSaver=ts);
 
