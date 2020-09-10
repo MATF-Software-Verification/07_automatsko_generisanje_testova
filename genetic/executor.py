@@ -76,18 +76,18 @@ class Executor:
 	def __getElfName(self, srcPath):
 
 		if srcPath[-2:] == '.c': # c program
-			#print("Working with C")
+
 			extension = '.c'
 			program_name = srcPath[:-2]
 		elif srcPath[-4:] in ('.cpp','.c++'):
-			#print("Working with c++")
+
 			extension = '.cpp'
-			program_name = srcPath[:-4] # cutting off extension
+			program_name = srcPath[:-4]
 		else:
 			print(srcPath)
 			print("Extension is not c or c++")
 			return -1
-		# data = bytes(program_data[0],'UTF-8')
+
 		return srcPath[srcPath.rfind('/')+1: srcPath.rfind('.'):], extension;
 
 
@@ -150,13 +150,6 @@ class Executor:
 			print("Debug: return err:", err.decode("utf-8"), file=sys.stderr)
 			print("Debug: return code:", p_test.returncode, file=sys.stderr)
 
-		# print(outs);
-
-		# We slice string by new line, since output is always same for gcov, we can hardcode numbers
-		# We perform 2 slices ( 3 list elements) and we are intereseted in 2nd element, and then we split by : so we just get number of %
-		# Possible hack
-		# extracted_data = outs.decode('UTF-8').split('\n',2)[1].split(':')[1].split(' ',1)[0][:-1]
-
 		return 0
 
 	# public member functions
@@ -181,11 +174,7 @@ class Executor:
 
 		with gzip.open(self.elfFile + '.gcda'+'.gcov.json.gz', 'rb') as f:
 			file_content = f.read()
-		#
-		# if os.path.exists('test.gcno'):
-		# 	os.remove('test.gcno')
-		# else:
-		# 	print("The file test.gcno does not exist")
+
 
 		if os.path.exists(self.elfFile + '.gcda'+'.gcov.json.gz'):
 			os.remove(self.elfFile + '.gcda' + '.gcov.json.gz')
