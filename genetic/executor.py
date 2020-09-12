@@ -21,7 +21,8 @@ class Executor:
 	saver = None;
 	debugger = None;
 
-	def __init__(self, srcPath, testSaver=None, debugger=None):
+
+	def __init__(self, srcPath, whatToConsider = 'lines', testSaver=None, debugger=None):
 
 		if os.path.exists(srcPath):
 			self.srcPath = srcPath;
@@ -38,6 +39,7 @@ class Executor:
 			#finally:
 				#os.rmdir(self.elfFile + '-temp-dir')
 
+			self.whatToConsider = whatToConsider
 			self.saver = testSaver;
 			self.debugger = debugger;
 
@@ -108,16 +110,18 @@ class Executor:
 
 		if whatToConsider == 'functions':
 			for file in jsonStruct['files']:
-				functions_count += len(file['lines']);
+				functions_count += len(file['functions']);
 
 				if self.total_number_of_functions <= 0:
 					self.total_number_of_functions = len(file['functions']);
 
-				for i in range(0, len(file['lines'])):
+				for i in range(0, len(file['functions'])):
 
-					if file['functions'][i]['count'] >= 1:
+					if file['functions'][i]['execution_count'] >= 1:
 						score += 1
 						self.executed_functions.add(i)
+
+
 			return score / functions_count
 
 
@@ -166,7 +170,7 @@ class Executor:
 
 		gcovData = json.loads(file_content);
 
-		return self.__handle_gcov_data(gcovData, 'lines',testinput);
+		return self.__handle_gcov_data(gcovData, self.whatToConsider, testinput);
 
 	def __execute_list_tests(self, program_name, test_cases):
 		for test in test_cases:
@@ -174,7 +178,7 @@ class Executor:
 
 		return 0;
 
-	def pretty_progress(self, executed_lines, total_number_of_lines):
+	def pretty_progress(self, executed_count, total_number):
 		length = 80;
-		percentage = executed_lines/total_number_of_lines;
+		percentage = executed_count/total_number;
 		self.debugger.log('Total coverage:[' + '#'*int(length*percentage) + '.'*int(length*(1-percentage)) +']'+ str(percentage*100)+ '%')
