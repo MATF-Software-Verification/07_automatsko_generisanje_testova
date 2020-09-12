@@ -1,4 +1,3 @@
-
 import random
 import string
 
@@ -7,14 +6,15 @@ class Genetic:
 
 	GENES = ''
 	shuffleBool = True;
-
-	def __init__(self, populationSize=10, chromosomeSize=5, parentsNumber=2, mutationRate=0.5, generationsCount=10, geneTypeList=['digits'], executor=None):
+	debugger = None;
+	def __init__(self, populationSize=10, chromosomeSize=5, parentsNumber=2, mutationRate=0.5, generationsCount=10, geneTypeList=['digits'], executor=None, debugger=None):
 		self.pop_size = populationSize;
 		self.c_size = chromosomeSize;
 		self.n_parents = parentsNumber;
 		self.mutation_rate = mutationRate;
 		self.n_gen = generationsCount;
 		self.executor = executor;
+		self.debugger = debugger;
 
 		for type_of_gene in geneTypeList:
 			if type_of_gene == 'alpha':
@@ -37,8 +37,8 @@ class Genetic:
 
 	def __initialize_population(self, pop_size, c_size):
 
+		self.debugger.write('Initializing population of size:' + str(pop_size) + ', and chromosome size:' + str(c_size));
 		population = random.sample(range(0,pop_size), pop_size);
-
 		populationList = list(map(lambda _: ''.join(random.choices(self.GENES, k=c_size)), population));
 		return populationList;
 
@@ -48,11 +48,14 @@ class Genetic:
 
 		result = list(zip (population,scores));
 		result = sorted(result, key= lambda x: x[1]);
-		#print(result)
-		return scores, population
+
+		self.debugger.log('Current fitness table:', result, color='green')
+
+
+		return [e[0] for e in result], [e[1] for e in result]
 
 	def __selection(self, pop_after_fit, n_parents):
-		return pop_after_fit[:n_parents]
+		return pop_after_fit[len(pop_after_fit) - n_parents:]
 
 	def __crossover(self, pop_after_sel,mutation_rate):
 		population_nextgen=[]
@@ -66,7 +69,6 @@ class Genetic:
 			child += pop_after_sel[second][xPosition:]
 
 			population_nextgen.append(self.__mutation(child, mutation_rate=mutation_rate))
-
 
 		return population_nextgen
 
@@ -83,10 +85,13 @@ class Genetic:
 	def start_evolution(self):
 		population_nextgen = self.__initialize_population(self.pop_size, self.c_size)
 		for i in range(self.n_gen):
-			print('Iteration :',i+1)
-			scores, pop_after_fit = self.__get_fitness_values(population_nextgen)
+			self.debugger.log(str(i+1) + '. generation:')
+
+			pop_after_fit, scores = self.__get_fitness_values(population_nextgen)
 
 			pop_after_sel = self.__selection(pop_after_fit,self.n_parents)
+
+			self.debugger.log('Selected chromosomes:', pop_after_sel, color="green")
 
 			population_nextgen = self.__crossover(pop_after_sel, self.mutation_rate)
 

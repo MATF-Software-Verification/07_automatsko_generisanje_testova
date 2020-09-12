@@ -6,15 +6,6 @@ import gzip
 import json
 
 
-DEBUG = 0
-
-"""
-To get file coverage we first call compiler with follwoing commands
-	1) Compile program for coverage - g++ -o test	-fprofile-arcs -ftest-coverage test.cpp  
-	2) Run program with given tests
-	3) Calculate coverage gcov test.cpp
-	4) Read retunred values
-"""
 class Executor:
 
 	tempFolderPath = '';
@@ -28,8 +19,9 @@ class Executor:
 	total_number_of_functions = -1;
 
 	saver = None;
+	debugger = None;
 
-	def __init__(self, srcPath, testSaver=None):
+	def __init__(self, srcPath, testSaver=None, debugger=None):
 
 		if os.path.exists(srcPath):
 			self.srcPath = srcPath;
@@ -47,6 +39,7 @@ class Executor:
 				#os.rmdir(self.elfFile + '-temp-dir')
 
 			self.saver = testSaver;
+			self.debugger = debugger;
 
 			self.__compile_program();
 		else: print('Neispravna putanja do fajla!', file=sys.stderr);
@@ -56,13 +49,9 @@ class Executor:
 	#private member methods
 
 	def __compile_program(self):
-		"""
-		Parsing program
-		"""
 
-		#print('g++ '  + self.elfFile + self.extension + ' -fprofile-arcs -ftest-coverage -o '   + self.tempFolderPath + '/' + self.elfFile)
+		self.debugger.write('Compiling program', self.elfFile + self.extension);
 
-		#ovde ustekati provere da li je ovo proslo sve kako treba itd itd...
 		os.system('g++ '  + self.srcPath + ' -fprofile-arcs -ftest-coverage -o '   + self.tempFolderPath + '/' + self.elfFile)
 
 		if os.path.exists(self.tempFolderPath + '/' + self.elfFile):
@@ -93,7 +82,7 @@ class Executor:
 
 	def __handle_gcov_data(self, jsonStruct, whatToConsider, testinput):
 
-		#print(testinput)
+
 		lines_count = 0;
 		score = 0;
 		functions_count = 0;
@@ -137,7 +126,7 @@ class Executor:
 
 	def __execute_test(self, data):
 
-		# print('Executing program', program_name);
+		self.debugger.write('Executing program:' + self.elfFile + ' with input:' + data);
 		p_test = sp.Popen(['./' + self.tempFolderPath + '/' + self.elfFile], stdin=sp.PIPE, stdout=sp.PIPE,
 						  stderr=sp.PIPE)
 
@@ -145,10 +134,6 @@ class Executor:
 
 		outs, err = p_test.communicate(input=data)
 		p_test.kill()
-		if DEBUG:
-			print("Debug: return stdout:", outs.decode("utf-8"), file=sys.stderr)
-			print("Debug: return err:", err.decode("utf-8"), file=sys.stderr)
-			print("Debug: return code:", p_test.returncode, file=sys.stderr)
 
 		return 0
 
@@ -161,9 +146,7 @@ class Executor:
 		p_gcov = sp.Popen(['gcov', '--json', self.elfFile + '.gcda'], stdout=sp.PIPE)
 
 		outs ,_ = p_gcov.communicate()
-		if DEBUG:
-			#outs, _ = p_gcov.communicate()
-			print("Debug: return stdout:", outs.decode('UTF-8'),file=sys.stderr)
+
 		p_gcov.kill()
 
 		if os.path.exists(self.elfFile + '.gcda'):
@@ -194,4 +177,4 @@ class Executor:
 	def pretty_progress(self, executed_lines, total_number_of_lines):
 		length = 80;
 		percentage = executed_lines/total_number_of_lines;
-		print('Total coverage:','[' + '#'*int(length*percentage) + '.'*int(length*(1-percentage)) +']', percentage*100, '%')
+		self.debugger.log('Total coverage:[' + '#'*int(length*percentage) + '.'*int(length*(1-percentage)) +']'+ str(percentage*100)+ '%')

@@ -26,6 +26,8 @@ class Configuration:
             self.mutationRate = jsonData['mutationRate'];
             self.generationsCount = jsonData['generationsCount'];
             self.geneTypeList = jsonData['geneTypeList'];
+            self.debug = jsonData['debug'];
+            self.showInfo = jsonData['showInfo'];
         else:
             print('conf.json not found', file=sys.stderr);
 

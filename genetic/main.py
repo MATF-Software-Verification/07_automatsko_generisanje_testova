@@ -2,13 +2,17 @@ from genetic import Genetic
 from configuration import Configuration
 from executor import Executor
 from testsaver import TestSaver
+from debugger import Debug
+
 
 def main():
 
     C = Configuration('conf.json')
 
+    debug = Debug(debug=C.debug, info=C.showInfo)
+
     saver = TestSaver('out.txt')
-    executorObject = Executor(srcPath=C.srcPath, testSaver=saver);
+    executorObject = Executor(srcPath=C.srcPath, testSaver=saver, debugger = debug);
 
     geneticObject = Genetic(populationSize=C.populationSize,  # Population pop_size
               chromosomeSize=C.chromosomeSize,  # size of chromosome (can be bytes, size of a number, size of a string...)
@@ -16,7 +20,8 @@ def main():
               mutationRate=C.mutationRate,  # selfexplanatory
               generationsCount=C.generationsCount,  # Number of generations (iterations)
               geneTypeList=C.geneTypeList, #list of
-              executor=executorObject)
+              executor=executorObject,
+              debugger=debug)
 
     geneticObject.start_evolution();
 

@@ -6,7 +6,7 @@ class TestSaver:
     def __init__(self, filePath):
         self.file = open(filePath, "w");
         self.file.write('test_input\n');
-        self.file.write('-----------' + '\n');
+        self.file.write('--------' + '\n');
 
     #private member functions
     def __write_to_file(self, testcase):

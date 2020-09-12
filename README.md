@@ -23,7 +23,7 @@ g++/gcc - GNU project C and C++ compiler
 
 gcov - coverage testing tool
 
-
+termcolor 1.1.0 
 ### Usage
 First, you need to define parameters for genetic algorithm in file conf.json (see Description for details).
 
