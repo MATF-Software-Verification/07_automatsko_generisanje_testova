@@ -65,6 +65,7 @@ genetic/__pycache__
 
 # Python byte code
 *.pyc
+*__pycache__/*
 
 # Binaries
 # --------
