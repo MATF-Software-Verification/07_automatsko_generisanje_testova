@@ -17,6 +17,9 @@ class Genetic:
 		self.executor = executor;
 		self.debugger = debugger;
 
+		if len(geneTypeList) == 0:
+			self.GENES += string.ascii_lowercase + string.digits
+
 		for type_of_gene in geneTypeList:
 			if type_of_gene == 'alpha':
 				self.GENES += string.ascii_lowercase;
