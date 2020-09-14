@@ -18,6 +18,9 @@ class Executor:
 	total_number_of_lines = -1;
 	total_number_of_functions = -1;
 
+	total_number_of_blocks = -1;
+
+
 	saver = None;
 	debugger = None;
 
@@ -124,6 +127,25 @@ class Executor:
 
 			return score / functions_count
 
+		if whatToConsider == 'blocks':
+			blocks_total = 0
+			blocks_executed = 0;
+
+			for file in jsonStruct['files']:
+				#functions_count += len(file['functions']);
+
+
+				for i in range(0, len(file['functions'])):
+					blocks_total += file['functions'][i]['blocks'];
+					blocks_executed += file['functions'][i]['blocks_executed'];
+
+
+			if self.total_number_of_blocks == -1:
+				self.total_number_of_blocks = blocks_total
+
+
+			return blocks_executed / blocks_total
+
 
 		return 0;
 
@@ -147,7 +169,7 @@ class Executor:
 
 		self.__execute_test(data=testinput);
 
-		p_gcov = sp.Popen(['gcov', '--json', self.elfFile + '.gcda'], stdout=sp.PIPE)
+		p_gcov = sp.Popen(['gcov', '-bac', '--json', self.elfFile + '.gcda'], stdout=sp.PIPE)
 
 		outs ,_ = p_gcov.communicate()
 
@@ -172,13 +194,20 @@ class Executor:
 
 		return self.__handle_gcov_data(gcovData, self.whatToConsider, testinput);
 
-	def __execute_list_tests(self, program_name, test_cases):
+	def __execute_list_tests(self, test_cases):
 		for test in test_cases:
 			self.__execute_test(test)
 
 		return 0;
 
-	def pretty_progress(self, executed_count, total_number):
+	def __pretty_progress(self, executed_count, total_number):
 		length = 80;
 		percentage = executed_count/total_number;
 		self.debugger.log('Total coverage:[' + '#'*int(length*percentage) + '.'*int(length*(1-percentage)) +']'+ str(percentage*100)+ '%')
+
+	def pretty_progress(self):
+		if self.whatToConsider == 'lines':
+			self.__pretty_progress(len(self.executed_lines), self.total_number_of_lines)
+		if self.whatToConsider == 'functions':
+			self.__pretty_progress(len(self.executed_functions),self.total_number_of_functions)
+

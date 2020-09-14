@@ -9,6 +9,6 @@
 	"showInfo": true,
 	"debug": false,
 	"geneTypeList": ["digits"],
-	"inputFormat": "123 12 12"
+	"inputFormat": "129 12 12 str1 2.3456"
 
 }

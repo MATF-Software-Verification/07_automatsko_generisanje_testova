@@ -33,6 +33,7 @@ Thumbs.db
 *.rc
 /.qmake.cache
 /.qmake.stash
+genetic/__pycache__
 
 # qtcreator generated filees
 *.pro.user*
