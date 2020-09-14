@@ -7,6 +7,7 @@ class Genetic:
 	GENES = ''
 	shuffleBool = True;
 	debugger = None;
+
 	def __init__(self, populationSize=10, chromosomeSize=5, parentsNumber=2, mutationRate=0.5, generationsCount=10, geneTypeList=['digits'], executor=None, debugger=None):
 		self.pop_size = populationSize;
 		self.c_size = chromosomeSize;
@@ -95,5 +96,7 @@ class Genetic:
 
 			population_nextgen = self.__crossover(pop_after_sel, self.mutation_rate)
 
-			self.executor.pretty_progress(len(self.executor.executed_lines), self.executor.total_number_of_lines)
+			self.executor.pretty_progress()
+			# self.executor.pretty_progress(len(self.executor.executed_lines), self.executor.total_number_of_lines)
+			# self.executor.pretty_progress(len(self.executor.executed_functions), self.executor.total_number_of_functions)
 		return 0

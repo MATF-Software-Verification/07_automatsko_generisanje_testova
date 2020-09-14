@@ -12,7 +12,7 @@ def main():
     debug = Debug(debug=C.debug, info=C.showInfo)
 
     saver = TestSaver('out.txt')
-    executorObject = Executor(srcPath=C.srcPath, testSaver=saver, debugger = debug);
+    executorObject = Executor(srcPath=C.srcPath, whatToConsider = C.whatToConsider, testSaver=saver, debugger = debug);
 
     geneticObject = Genetic(populationSize=C.populationSize,  # Population pop_size
               chromosomeSize=C.chromosomeSize,  # size of chromosome (can be bytes, size of a number, size of a string...)

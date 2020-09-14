@@ -26,6 +26,7 @@ class Configuration:
             self.mutationRate = jsonData['mutationRate'];
             self.generationsCount = jsonData['generationsCount'];
             self.geneTypeList = jsonData['geneTypeList'];
+            self.whatToConsider = jsonData['whatToConsider'];
             self.debug = jsonData['debug'];
             self.showInfo = jsonData['showInfo'];
         else:
