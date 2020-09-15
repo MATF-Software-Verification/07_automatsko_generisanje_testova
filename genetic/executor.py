@@ -211,3 +211,5 @@ class Executor:
 		if self.whatToConsider == 'functions':
 			self.__pretty_progress(len(self.executed_functions),self.total_number_of_functions)
 
+	def is100(self):
+		return self.total_number_of_lines == len(self.executed_lines)
